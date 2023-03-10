@@ -3,8 +3,8 @@
  */
 
 function otrabotka() {
-  const SheetByName = 'Квартиранты'
-  const SheetByName1 = 'К оплате'
+  const SheetByName = 'Квартиранти'
+  const SheetByName1 = 'До оплати'
   const ss = SpreadsheetApp.getActive();
   const sh = ss.getSheetByName(SheetByName);
   const sh1 = ss.getSheetByName(SheetByName1);
@@ -12,26 +12,29 @@ function otrabotka() {
   sh1.activate();
 
   //отдельные коммуналки
-  const svet = ((raschetTab('Свет3')).toFixed(2)) * 1
-  const vodokanal = ((raschetTab('Водоканал3')).toFixed(2)) * 1
-  const gvenergo = ((raschetTab('ГВ3 Киевэнерго нов1')).toFixed(2)) * 1
-  const soderjanie = ((raschetTab('Содержание3')).toFixed(2)) * 1
-  const othod = ((raschetTab('Отходы3')).toFixed(2)) * 1
-  const otoplenie = ((raschetTab('Отопление3')).toFixed(2)) * 1
-  const gas = ((raschetTab('Газ3')).toFixed(2)) * 1
-  const domofon = ((raschetTab('Домофон3')).toFixed(2)) * 1
+  const svet = ((raschetTab('Світло3')).toFixed(2)) * 1;
+  const vodokanal = ((raschetTab('Водоканал3')).toFixed(2)) * 1;
+  const gvenergo = ((raschetTab('ГВ3 Київенерго нов1')).toFixed(2)) * 1;
+  const soderjanie = ((raschetTab('Утримання3')).toFixed(2)) * 1;
+  const othod = ((raschetTab('Відходи3')).toFixed(2)) * 1;
+  const otoplenie = ((raschetTab('Опалення3')).toFixed(2)) * 1;
+  const gas = ((raschetTab('Газ3')).toFixed(2)) * 1;
+  const domofon = ((raschetTab('Домофон3')).toFixed(2)) * 1;
+
+  console.log(soderjanie);
+  
   
   //сумма всех коммуналок
   const summ = svet + vodokanal + gvenergo + soderjanie + othod + otoplenie + gas + domofon;
   
   // колонка внесения суммы
-  const col = numColElementa(SheetByName, 'Насчитано коммуналка скрипт').numCol;
+  const col = numColElementa(SheetByName, 'Нараховано комуналка скрипт').numCol;
 
   // строка внесения суммы
   const row = numRowKvart();
 
   // номер колонки "Остаток коммуналка скрипт" таблицы "Квартиранты"
-  const nCo = numColElementa('Квартиранты', 'Остаток коммуналка скрипт').numCol;
+  const nCo = numColElementa('Квартиранти', 'Остаток комуналка скрипт').numCol;
 
   // внесение суммы коммуналки в 'Квартиранты' за минусом предыдущей переплаты/недоплаты
   sh.getRange(row, col).setValue((((summ * 1 + sh.getRange(row - 1, nCo).getValue()) * 1).toFixed(2)) * 1);
@@ -53,7 +56,7 @@ function otrabotka() {
 
 // строка внесения суммы в таблицу 'Квартиранты'
 function numRowKvart() {
-  const SheetByName = 'Квартиранты'
+  const SheetByName = 'Квартиранти'
   const ss = SpreadsheetApp.getActive();
   const sh = ss.getSheetByName(SheetByName);
 
@@ -90,8 +93,8 @@ function numColElementa(SheetByName, element) {
     for (let ii = 0; ii <= values[i].length; ii++) {
       if (values[i][ii] === element) {
         return {
-          nameRow: 'строка', numRow: i + 1,
-          nameCol: 'столбец', numCol: ii + 1
+          nameRow: 'рядок', numRow: i + 1,
+          nameCol: 'стовпець', numCol: ii + 1
         };
       }
     }
@@ -104,7 +107,7 @@ function raschetTab(sheetName) {
   const sh = ss.getSheetByName(sheetName);
   const range = sh.getDataRange();
   const values = range.getValues();
-  const dateOplat = 'Дата оплаты скрипт'
+  const dateOplat = 'Дата оплати скрипт'
   const summaOplat = 'Оплата скрипт'
   // находим номер колонки 'Дата оплаты скрипт'
   const col = numColElementa(sheetName, dateOplat).numCol
@@ -138,7 +141,7 @@ function raschetTab(sheetName) {
 // дата, на которую производится расчет
 function actDate() {
   const ss = SpreadsheetApp.getActive();
-  const sh = ss.getSheetByName('К оплате');
+  const sh = ss.getSheetByName('До оплати');
   const range = sh.getRange(1, 1);
   const value = range.getValue();
   return Utilities.formatDate(new Date(value), 'Europe/Kiev', 'MM.yyyy');
@@ -152,10 +155,10 @@ function onEdit(e) {
   const sheetname = e.range.getSheet().getName();
 
   // заполняем "Остаток коммуналка скрипт"
-  if (sheetname === 'Квартиранты' && range.getColumn() === 5) {
+  if (sheetname === 'Квартиранти' && range.getColumn() === 5) {
     range.offset(0, 3).setValue((range.offset(0, 2).getValue() || 0) - (value.replace(',', '.')) * 1);
   }
-  if (sheetname === 'Квартиранты' && range.getColumn() === 5 && (value == 0)) {
+  if (sheetname === 'Квартиранти' && range.getColumn() === 5 && (value == 0)) {
     range.offset(0, 3).clearContent();
     range.clearContent();
   }
@@ -165,6 +168,6 @@ function onOpen(){
  
   SpreadsheetApp.getUi()
   .createMenu('Меню')
-  .addItem('Расчет', 'otrabotka')
+  .addItem('Розрахунок', 'otrabotka')
   .addToUi();
 }
